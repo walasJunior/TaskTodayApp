@@ -1,7 +1,6 @@
-package com.example.apptoday
+package com.example
 
 import android.os.Bundle
-import android.telecom.Call.Details
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,17 +13,15 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.apptoday.ui.theme.ApptodayTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.model.Tarefa.Tarefa
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,7 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreenContest()
+            MainScreenContest(DrawerState(initialValue = DrawerValue.Closed))
 
         }
     }
@@ -41,6 +38,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreenContest (drawerState: DrawerState){
     val scaffoldState = rememberScaffoldState(drawerState = drawerState)
+    var scope = rememberCoroutineScope()
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -48,7 +46,7 @@ fun MainScreenContest (drawerState: DrawerState){
                 title = { Text(text = "TaskTodayAPP")},
                 navigationIcon = {
                     IconButton(onClick = {
-                        CoroutineScope(Dispatchers.Default).launch {
+                        scope.launch {
                             scaffoldState.drawerState.open()
                         }
                          }
@@ -64,6 +62,26 @@ fun MainScreenContest (drawerState: DrawerState){
             )
 
         },
+        drawerBackgroundColor = Color.Red,
+        drawerGesturesEnabled = drawerState.isOpen,
+        drawerContent = {
+            Box(
+                modifier = Modifier
+                    .background(Color.Magenta)
+                    .height(16.dp)
+            ) {
+                Text(text = "Opções!!!")
+                Text(text = "----------")
+            }
+            Column() {
+                Text(text = "Opcao de menu 1")
+                Text(text = "Opcao de menu 2")
+                Text(text = "Opcao de menu 3")
+
+
+            }
+
+        },
         content = {
             paddingValues -> Log.i ("paddinValues","$paddingValues")
             Column(
@@ -73,6 +91,7 @@ fun MainScreenContest (drawerState: DrawerState){
 
             ){
                 MySearchField(modificador = Modifier.fillMaxWidth())
+
                 MyTaskWidget(
                     modificador = Modifier.fillMaxWidth(),
                     taskName = "Preparar Aula LazyList/LazyColum",
@@ -85,8 +104,6 @@ fun MainScreenContest (drawerState: DrawerState){
                     taskDetails ="Estudar Calculo capitulo 1 e 2" ,
                     deadEndDate = Date() )
 
-                Text("Task3")
-                Text("Task4")
 
             }
         },
@@ -101,6 +118,12 @@ fun MainScreenContest (drawerState: DrawerState){
 
 
 }
+@Composable
+fun MyTaskWidgetList(listaDeTarefas: List<Tarefa>){
+    listaDeTarefas.forEach(action = {Log.i("#####%%%%%#####","${it.nome}") })
+
+}
+
 
 @Composable
 fun MySearchField(modificador: Modifier){
@@ -125,7 +148,7 @@ fun MyTaskWidget
              taskDetails: String,
              deadEndDate: Date
             ){
-    val dateFormatter = SimpleDateFormat("eee,mmm,dd,yyyyy", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("EEE,MMM,dd,yyyyy", Locale.getDefault())
     Row(modifier = modificador) {
         Column() {
             
@@ -161,8 +184,10 @@ fun MyTaskWidget
 }
     Spacer(modifier = Modifier.height(16.dp))
 }
+
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
- MainScreenContest()
+    MainScreenContest(DrawerState(initialValue = DrawerValue.Closed))
 }
