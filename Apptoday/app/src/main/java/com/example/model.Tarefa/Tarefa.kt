@@ -1,10 +1,11 @@
 package com.example.model.Tarefa
 
 import java.util.Date
-class Tarefa (nome: String ,  detalhes: String?, createdDate: Date, pzoFinal: Date){
 
-    var status = "pendente"
-        get() {field}
+class Tarefa (val nome: String , val detalhes: String?, val createdDate: Date,val pzoFinal: Date, status: Double){
+
+    var status = 0.0
+        get() { return field}
         set(value) {
             field = value
         }

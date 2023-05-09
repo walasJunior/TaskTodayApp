@@ -9,10 +9,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +38,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreenContest (drawerState: DrawerState){
     val scaffoldState = rememberScaffoldState(drawerState = drawerState)
     var scope = rememberCoroutineScope()
+    var tabIndex = by remember{ mutableStateOf(0) }
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -92,17 +92,36 @@ fun MainScreenContest (drawerState: DrawerState){
             ){
                 MySearchField(modificador = Modifier.fillMaxWidth())
 
-                MyTaskWidget(
-                    modificador = Modifier.fillMaxWidth(),
-                    taskName = "Preparar Aula LazyList/LazyColum",
-                    taskDetails ="É bem melhor usar lazilist ao inves de colum",
-                    deadEndDate = Date()
+
+
+                val calendar = Calendar.getInstance()
+
+
+
+
+
+                val  tProvadeCalculo = Tarefa(
+                    "Estudar Prova de Calculo",
+                    "Cplto1 do livro xyz",
+                    Date(),
+                    Date(),
+                    status = 0.0
                 )
-                MyTaskWidget(
-                    modificador = Modifier.fillMaxWidth(),
-                    taskName = "Prova Matematica",
-                    taskDetails ="Estudar Calculo capitulo 1 e 2" ,
-                    deadEndDate = Date() )
+
+                val  tProvadeKotlin= Tarefa(
+                    "Estudar Prova de Kotlin",
+                    "Cplto1 do livro xyz",
+                    Date(),
+                    Date(),
+                    status = 0.0
+                )
+
+                var MinhaListaDeTarefas = listOf<Tarefa>(tProvadeCalculo, tProvadeKotlin)
+
+
+                MyTaskWidgetList(MinhaListaDeTarefas)
+
+
 
 
             }
@@ -113,14 +132,25 @@ fun MainScreenContest (drawerState: DrawerState){
             )
                 
 
-        }
-    )
+        },
+        isFloatingActionButtonDocked = false,
+        floatingActionButton = { ExtendedFloatingActionButton(
+            icon = {
+                   Icon(imageVector = Icons.Default.AddCircle,
+                       contentDescription ="Add Task")
+            },
+            text = { Text(text = "ADD") },
+            onClick = { /*TODO*/ })
 
+        }
+
+    )
 
 }
 @Composable
 fun MyTaskWidgetList(listaDeTarefas: List<Tarefa>){
-    listaDeTarefas.forEach(action = {Log.i("#####%%%%%#####","${it.nome}") })
+    listaDeTarefas.forEach(
+       action = { MyTaskWidget(modificador = Modifier.fillMaxWidth(), tarefasASerMostrada = it)})
 
 }
 
@@ -144,9 +174,8 @@ fun MySearchField(modificador: Modifier){
 @Composable
 fun MyTaskWidget
             (modificador: Modifier,
-             taskName : String,
-             taskDetails: String,
-             deadEndDate: Date
+             tarefasASerMostrada : Tarefa
+
             ){
     val dateFormatter = SimpleDateFormat("EEE,MMM,dd,yyyyy", Locale.getDefault())
     Row(modifier = modificador) {
@@ -157,7 +186,7 @@ fun MyTaskWidget
             imageVector = Icons.Default.Notifications,
             contentDescription = "Icons of a pedent task"
         )
-        Text(text = dateFormatter.format(deadEndDate),
+        Text(text = dateFormatter.format(tarefasASerMostrada.pzoFinal),
         fontWeight = FontWeight.Bold,
         fontStyle = FontStyle.Italic,
         fontSize = 12.sp
@@ -169,18 +198,20 @@ fun MyTaskWidget
             .padding(3.dp)
     ) {
         Text(
-            text = taskName,
+            text = tarefasASerMostrada.nome,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Italic
         )
-        Text(
-            text = taskDetails,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Normal,
-            fontStyle = FontStyle.Normal
-        )
-    }
+
+            Text(
+                text = tarefasASerMostrada.detalhes.toString(),
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Normal,
+                fontStyle = FontStyle.Normal
+            )
+        }
+
 }
     Spacer(modifier = Modifier.height(16.dp))
 }
